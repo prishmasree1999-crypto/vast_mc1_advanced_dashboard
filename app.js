@@ -1,4 +1,4 @@
-const DATA_PATH = "../data_clean/";
+const DATA_PATH = "./data_clean/";
 
 const agentColors = d3.scaleOrdinal()
   .domain([
