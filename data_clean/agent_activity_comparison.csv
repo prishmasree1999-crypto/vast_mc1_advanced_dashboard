@@ -1,0 +1,8 @@
+agent_id,agent_label,baseline_daily_mean,june5_count,activity_multiplier
+intern_agent,Intern-Agent,1.8571428571428572,24,12.92
+judge_agent,Judge-Agent,3.75,6,1.6
+legal_agent,Legal-Agent,6.923076923076923,176,25.42
+pr_agent,PR-Agent,5.615384615384615,28,4.99
+pr_intern_agent,PR-Intern-Agent,3.0,69,23.0
+quality_agent,Platform-Trust-Agent,10.384615384615385,48,4.62
+social_media_agent,Social-Manager-Agent,5.846153846153846,144,24.63

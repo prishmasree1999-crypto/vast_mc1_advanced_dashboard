@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>VAST MC1 Advanced Investigation Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+  <header class="hero">
+    <p class="small-title">VAST Challenge 2026 MC1</p>
+    <h1>Advanced Embargo Breach Investigation</h1>
+    <p>
+      This dashboard reconstructs the breach using causal mapping, agent behaviour deviation,
+      shadow-channel analysis, keyword bursts, Judge-Agent silence, and evidence-linked findings.
+    </p>
+  </header>
+
+  <main>
+    <section class="summary-grid">
+      <div class="summary-card">
+        <span>Total messages</span>
+        <strong id="totalMessages">-</strong>
+      </div>
+
+      <div class="summary-card">
+        <span>Total agents</span>
+        <strong id="totalAgents">-</strong>
+      </div>
+
+      <div class="summary-card">
+        <span>Total channels</span>
+        <strong id="totalChannels">-</strong>
+      </div>
+
+      <div class="summary-card danger">
+        <span>First breach post</span>
+        <strong>Legal-Agent<br>5:25 PM</strong>
+      </div>
+
+      <div class="summary-card warning">
+        <span>Official embargo</span>
+        <strong>6:00 PM</strong>
+      </div>
+    </section>
+
+    <section class="answer-box">
+      <p>
+        The breach was predictable. side_huddle activity started before June 5,
+        sensitive merger signals appeared earlier, Judge-Agent warned at 3:08 PM and then went silent,
+        Legal-Agent invoked Section 4.3(c), and Legal-Agent made the first public breach post at 5:25 PM.
+      </p>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-heading">
+        <div>
+          <h2>Forensic Causal Map</h2>
+          <p>Advanced cause-and-effect graph showing how early signals became a public breach.</p>
+        </div>
+        <span class="badge">D3 causal graph</span>
+      </div>
+
+      <div id="causalMap" class="viz large"></div>
+      <div id="selectedEvidence" class="selected-evidence">
+        Click any causal node to view its evidence explanation.
+      </div>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-heading">
+        <div>
+          <h2>June 5 Breach Swimlane</h2>
+          <p>Shows exact breach-day sequence by time, agent and communication channel.</p>
+        </div>
+        <span class="badge">D3 swimlane</span>
+      </div>
+
+      <div id="june5Swimlane" class="viz large"></div>
+    </section>
+
+    <section class="grid-two">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Information Movement Flow</h2>
+            <p>Shows how agent communications moved through channels.</p>
+          </div>
+          <span class="badge">Sankey</span>
+        </div>
+
+        <div id="sankeyChart" class="viz"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Agent × Channel Heatmap</h2>
+            <p>Shows which agents used which channels most heavily.</p>
+          </div>
+          <span class="badge">Heatmap</span>
+        </div>
+
+        <div id="agentChannelHeatmap" class="chart"></div>
+      </section>
+    </section>
+
+    <section class="grid-two">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Behaviour Deviation</h2>
+            <p>Compares normal baseline activity with June 5 activity.</p>
+          </div>
+          <span class="badge">Deviation chart</span>
+        </div>
+
+        <div id="behaviourDeviation" class="chart"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Keyword Warning Timeline</h2>
+            <p>Shows sensitive topic bursts before and during the breach.</p>
+          </div>
+          <span class="badge">Keyword burst</span>
+        </div>
+
+        <div id="keywordTimeline" class="chart"></div>
+      </section>
+    </section>
+
+    <section class="grid-two">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Side_Huddle Leading Indicator</h2>
+            <p>Shows early shadow-channel activity before June 5.</p>
+          </div>
+          <span class="badge">Leading indicator</span>
+        </div>
+
+        <div id="sideHuddleChart" class="chart"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Judge Silence Gap</h2>
+            <p>Shows the compliance warning followed by silence before breach.</p>
+          </div>
+          <span class="badge">Failure timeline</span>
+        </div>
+
+        <div id="judgeSilenceChart" class="viz"></div>
+      </section>
+    </section>
+
+    <section class="grid-two">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Risk Radar</h2>
+            <p>Shows risk components for the selected agent.</p>
+          </div>
+          <span class="badge">Radar</span>
+        </div>
+
+        <label class="control-label">
+          Select agent:
+          <select id="agentSelector"></select>
+        </label>
+
+        <div id="riskRadar" class="viz"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Corrected Agent Risk Ranking</h2>
+            <p>Fixes the wrong equal-risk ranking by scoring each agent differently.</p>
+          </div>
+          <span class="badge">Risk ranking</span>
+        </div>
+
+        <div id="riskRanking" class="chart"></div>
+      </section>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-heading">
+        <div>
+          <h2>Evidence Panel</h2>
+          <p>Every conclusion must be connected to real timestamped evidence.</p>
+        </div>
+        <span class="badge">Evidence cards</span>
+      </div>
+
+      <div id="evidenceCards" class="evidence-grid"></div>
+    </section>
+
+    <section class="answer-box conclusion">
+      <p>
+        The visual evidence shows that the breach was not sudden. It developed through shadow coordination,
+        sensitive keyword signals, weakened compliance control, Legal-Agent self-authorisation and public amplification.
+        Legal-Agent was the first public actor, while Judge-Agent failed by warning and then going silent.
+      </p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

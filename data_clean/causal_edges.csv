@@ -1,0 +1,9 @@
+source,target,strength,mechanism
+N1,N2,30,Private coordination made later warning signals harder to monitor.
+N2,N3,40,Earlier merger signals increased public and internal sensitivity.
+N3,N4,60,External pressure triggered compliance concern.
+N4,N5,75,The Judge warned but did not enforce.
+N5,N6,80,Compliance silence allowed Legal-Agent to self-authorise.
+N6,N7,95,Section 4.3(c) became the legal justification for early public disclosure.
+N7,N8,85,Social-Agent amplified the Legal-Agent disclosure.
+N8,N9,45,Embargo expiry occurred after the breach had already happened.
